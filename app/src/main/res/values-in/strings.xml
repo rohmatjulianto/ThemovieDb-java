@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Movie Catalogue</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="movie">Film</string>
+    <string name="series">Serial Tv</string>
+    <string name="favorite">Kesukaan</string>
+    <string name="change_language">Ubah bahasa</string>
+    <string name="name">Nama</string>
+    <string name="name_of_title">Name of title</string>
+    <string name="release_date">Tanggal rilis</string>
+    <string name="title_of_release_date">title of release date</string>
+    <string name="label_rating">Peringkat : %1s of 5</string>
+    <string name="rating">Peringkat :</string>
+    <string name="text_of_overview">text of overview</string>
+    <string name="overview">Deskripsi</string>
+    <string name="add_favorite">Add Favorite</string>
+    <string name="title_no_data">Tidak ada data</string>
+
+    <!--    dialog builder-->
+    <string name="btn_yes">Iya</string>
+    <string name="btn_no">Tidak</string>
+    <string name="dialog_title_add">Tambah</string>
+    <string name="dialog_title_remove">Hapus</string>
+    <string name="dialog_message_add">Tambah ke kesukaan?</string>
+    <string name="dialog_message_remove">Hapus dari kesukaan?</string>
+    <!--    dialog builder end-->
+    <!--    toast-->
+    <string name="sukses_add">Berhasil ditambahkan</string>
+    <string name="sukses_delete">Berhasil dihapus</string>
+    <string name="sukses_fail">Gagal</string>
+    <!--    toastend-->
+
+</resources>
