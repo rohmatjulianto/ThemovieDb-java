@@ -104,6 +104,6 @@ public class FavHelper {
     }
 
     public int deleteFav(String name){
-        return database.delete(DB_TABLE, NAME + "= '" + name + "'", null);
+        return database.delete(DB_TABLE, NAME + "=?", new String[]{name});
     }
 }
