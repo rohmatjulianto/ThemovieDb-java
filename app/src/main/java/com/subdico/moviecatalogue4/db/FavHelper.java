@@ -6,19 +6,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import com.subdico.moviecatalogue4.model.ListData;
-
-import java.util.ArrayList;
 
 import static android.provider.BaseColumns._ID;
 import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.FAV_TYPE;
-import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.FIRST_AIR_DATE;
 import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.NAME;
-import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.OVERVIEW;
-import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.POSTER_PATH;
-import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.VOTE_AVERAGE;
 import static com.subdico.moviecatalogue4.db.DbContract.TABLE_NAME;
 
 public class FavHelper {
@@ -47,53 +38,6 @@ public class FavHelper {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close(){
-        dbHelper.close();
-        if (database.isOpen()){
-            database.close();
-        }
-    }
-
-    public ArrayList<ListData> getAllFav(String type){
-        ArrayList<ListData> arrayList = new ArrayList<>();
-        Cursor cursor = database.query(DB_TABLE,
-                null,FAV_TYPE + "=?",new String[]{type}, null, null, _ID + " DESC", null);
-        cursor.moveToFirst();
-        ListData listData;
-
-        if (cursor.getCount() > 0){
-            do {
-                listData = new ListData();
-                listData.setId(cursor.getInt(cursor.getColumnIndexOrThrow(_ID)));
-                listData.setName(cursor.getString(cursor.getColumnIndexOrThrow(NAME)));
-                listData.setPoster_path(cursor.getString(cursor.getColumnIndexOrThrow(POSTER_PATH)));
-                listData.setFirst_air_date(cursor.getString(cursor.getColumnIndexOrThrow(FIRST_AIR_DATE)));
-                listData.setOverview(cursor.getString(cursor.getColumnIndexOrThrow(OVERVIEW)));
-                listData.setVote_average(cursor.getDouble(cursor.getColumnIndexOrThrow(VOTE_AVERAGE)));
-
-                arrayList.add(listData);
-                cursor.moveToNext();
-
-            }while (!cursor.isAfterLast());
-        }
-        cursor.close();
-        return arrayList;
-    }
-
-    public long insertFav(ListData listData){
-        ContentValues args = new ContentValues();
-        args.put(NAME, listData.getName());
-        args.put(POSTER_PATH, listData.getPoster_path());
-        args.put(FIRST_AIR_DATE, listData.getFirst_air_date());
-        args.put(OVERVIEW, listData.getOverview());
-        args.put(VOTE_AVERAGE, listData.getVote_average());
-        args.put(FAV_TYPE, listData.getType());
-
-        Log.w("Inserting", "insertFav: "+args);
-        return database.insert(DB_TABLE, null, args);
-
-    }
-
     public Cursor checkFav(String name){
         Cursor cursor =  database.query(DB_TABLE,null,
                 NAME + "=?",new String[]{name}, null, null,null, null);
@@ -103,7 +47,21 @@ public class FavHelper {
         return cursor;
     }
 
-    public int deleteFav(String name){
+    //provider
+    public Cursor getFavProvider(String type){
+        return database.query(DB_TABLE,
+                null,FAV_TYPE + "=?",new String[]{type}, null, null, _ID + " DESC");
+    }
+    public Cursor getFavProviderAll(){
+        return database.query(DB_TABLE,
+                null,null,null, null, null, _ID + " DESC");
+    }
+
+    public long insertFavProvider(ContentValues values){
+        return database.insert(DB_TABLE, null, values);
+    }
+
+    public int deleteFavProvider(String name){
         return database.delete(DB_TABLE, NAME + "=?", new String[]{name});
     }
 }

@@ -14,6 +14,10 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">#ffffff</item>
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -33,7 +37,7 @@
 
     <style name="TextAppearance.Label" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/cardview_dark_background</item>
-        <item name="android:textSize">11dp</item>
+        <item name="android:textSize">11sp</item>
     </style>
 
 

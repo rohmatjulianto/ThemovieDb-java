@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +22,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.subdico.moviecatalogue4.db.FavHelper;
 import com.subdico.moviecatalogue4.model.ListData;
+
+import static android.provider.BaseColumns._ID;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.CONTENT_URI;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.FAV_TYPE;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.FIRST_AIR_DATE;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.NAME;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.OVERVIEW;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.POSTER_PATH;
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.VOTE_AVERAGE;
 
 
 public class DetailActivity extends AppCompatActivity {
@@ -70,11 +81,12 @@ public class DetailActivity extends AppCompatActivity {
             tvDate.setText(mListData.getFirst_air_date());
             tvOverview.setText(mListData.getOverview());
 
-            float d = mListData.getVote_average().floatValue()/2;
-            String label_rating = Float.toString(d);
-
+            Log.d("XXX", "onCreate: "+mListData.getVote_average());
+            double d = Double.parseDouble(mListData.getVote_average());
+            float f = (float)d /2;
+            String label_rating = Float.toString(f);
             tvRatingBar.setText(getResources().getString(R.string.label_rating, label_rating));
-            ratingBar.setRating(d);
+            ratingBar.setRating(f);
 
         }
 
@@ -130,11 +142,8 @@ public class DetailActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (checkSql()){
-                            long delete = favHelper.deleteFav(mListData.getName());
-                            if (delete > 0 ){
-                                Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_delete), Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
+                            deleteFav();
+                            Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_delete), Toast.LENGTH_SHORT).show();
                         }else{
                             insert();
                             menu.getItem(0).setIcon(R.drawable.ic_favorite_red);
@@ -152,13 +161,28 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void insert(){
-        long result = favHelper.insertFav(mListData);
-        if (result > 0){
-            mListData.setId((int) result);
-            Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_add), Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_fail), Toast.LENGTH_SHORT).show();
-        }
+        ContentValues values = new ContentValues();
+        values.put(_ID, mListData.getId());
+        values.put(NAME, mListData.getName());
+        values.put(POSTER_PATH, mListData.getPoster_path());
+        values.put(OVERVIEW, mListData.getOverview());
+        values.put(FIRST_AIR_DATE, mListData.getFirst_air_date());
+        values.put(VOTE_AVERAGE, mListData.getVote_average());
+        values.put(FAV_TYPE, mListData.getType());
+
+        getContentResolver().insert(CONTENT_URI, values);
+        Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_add), Toast.LENGTH_SHORT).show();
+//        if (result > 0){
+//            mListData.setId((int) result);
+//            Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_add), Toast.LENGTH_SHORT).show();
+//        }else{
+//            Toast.makeText(DetailActivity.this, getResources().getString(R.string.sukses_fail), Toast.LENGTH_SHORT).show();
+//        }
+    }
+
+    private void deleteFav(){
+        getContentResolver().delete(CONTENT_URI, mListData.getName(), null);
+        finish();
     }
 
     private boolean checkSql(){

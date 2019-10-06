@@ -1,29 +1,28 @@
 package com.subdico.moviecatalogue4.model;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.subdico.moviecatalogue4.db.DbContract;
 
 import org.json.JSONObject;
 
+import static android.provider.BaseColumns._ID;
+import static com.subdico.moviecatalogue4.db.DbContract.getColumnsInt;
+import static com.subdico.moviecatalogue4.db.DbContract.getColumnsString;
+
 public class ListData implements Parcelable {
+
+
     private int id;
     private String name;
     private String poster_path;
     private String overview;
     private String first_air_date;
-    private Double vote_average;
+    private String vote_average;
     private String type;
-
-
-
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public int getId() {
         return id;
@@ -65,13 +64,41 @@ public class ListData implements Parcelable {
         this.first_air_date = first_air_date;
     }
 
-    public Double getVote_average() {
+    public String getVote_average() {
         return vote_average;
     }
 
-    public void setVote_average(Double vote_average) {
+    public void setVote_average(String vote_average) {
         this.vote_average = vote_average;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public ListData(int id, String name, String poster_path, String overview, String first_air_date, String vote_average, String type) {
+        this.id = id;
+        this.name = name;
+        this.poster_path = poster_path;
+        this.overview = overview;
+        this.first_air_date = first_air_date;
+        this.vote_average = vote_average;
+        this.type = type;
+    }
+    public ListData(Cursor cursor){
+        this.id = getColumnsInt(cursor, _ID);
+        this.name = getColumnsString(cursor, DbContract.NoteColumns.NAME);
+        this.poster_path = getColumnsString(cursor, DbContract.NoteColumns.POSTER_PATH);
+        this.overview = getColumnsString(cursor, DbContract.NoteColumns.OVERVIEW);
+        this.first_air_date = getColumnsString(cursor, DbContract.NoteColumns.FIRST_AIR_DATE);
+        this.vote_average = getColumnsString(cursor, DbContract.NoteColumns.VOTE_AVERAGE);
+        this.type = getColumnsString(cursor, DbContract.NoteColumns.FAV_TYPE);
+    }
+
 
     public ListData(JSONObject jsonObject) {
 
@@ -93,21 +120,29 @@ public class ListData implements Parcelable {
                 release_date = jsonObject.getString("first_air_date");
 
             }
+            int id = jsonObject.getInt("id");
+            double vote = jsonObject.getDouble("vote_average");
+            String vote_average = String.valueOf(vote);
 
-            Double vote_average = jsonObject.getDouble ("vote_average");
             String poster_path = path + jsonObject.getString("poster_path");
             String overview = jsonObject.getString("overview");
 
+            this.id = id;
             this.name =  name;
             this.first_air_date = release_date;
             this.vote_average = vote_average;
             this.poster_path = poster_path;
             this.overview = overview;
             this.type = type;
+            Log.d("VOTE", "ListData: "+getVote_average());
 
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    public ListData() {
     }
 
 
@@ -123,13 +158,9 @@ public class ListData implements Parcelable {
         dest.writeString(this.poster_path);
         dest.writeString(this.overview);
         dest.writeString(this.first_air_date);
-        dest.writeValue(this.vote_average);
+        dest.writeString(this.vote_average);
         dest.writeString(this.type);
     }
-
-    public ListData() {
-    }
-
 
     protected ListData(Parcel in) {
         this.id = in.readInt();
@@ -137,7 +168,7 @@ public class ListData implements Parcelable {
         this.poster_path = in.readString();
         this.overview = in.readString();
         this.first_air_date = in.readString();
-        this.vote_average = (Double) in.readValue(Double.class.getClassLoader());
+        this.vote_average = in.readString();
         this.type = in.readString();
     }
 
@@ -152,4 +183,6 @@ public class ListData implements Parcelable {
             return new ListData[size];
         }
     };
+
+
 }

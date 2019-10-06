@@ -1,13 +1,19 @@
 package com.subdico.moviecatalogue4;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.subdico.moviecatalogue4.alarm.AlarmReceiver;
+import com.subdico.moviecatalogue4.widget.WidgetFav;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +21,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.CONTENT_URI;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -27,8 +35,9 @@ public class MainActivity extends AppCompatActivity  {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_movie, R.id.navigation_series, R.id.navigation_favorites)
+                R.id.navigation_list, R.id.navigation_favorites, R.id.navigation_settings)
                 .build();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
@@ -36,6 +45,11 @@ public class MainActivity extends AppCompatActivity  {
         if (getSupportActionBar() != null){
             getSupportActionBar().setElevation(0);
         }
+        HandlerThread handlerThread = new HandlerThread("DataObserver");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        DataObserver dataObserver = new DataObserver(handler, this);
+        getContentResolver().registerContentObserver(CONTENT_URI, true, dataObserver);
 
     }
 
@@ -48,11 +62,28 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.change_language){
-            Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
-            startActivity(intent);
+        switch (item.getItemId()){
+            case R.id.change_language:
+                Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class DataObserver extends ContentObserver{
+        final Context context;
+
+        public DataObserver(Handler handler, Context context){
+            super(handler);
+            this.context = context;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            WidgetFav.notifyWidgetDataChanged(context);
+        }
     }
 
 }

@@ -1,6 +1,9 @@
-package com.subdico.moviecatalogue4.ui.Favorites.pager;
+package com.subdico.moviecatalogue4.ui.Favorites.pager_favorites;
 
 
+import android.content.Context;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -10,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +25,13 @@ import android.widget.ProgressBar;
 import com.subdico.moviecatalogue4.LoadDataCallback;
 import com.subdico.moviecatalogue4.R;
 import com.subdico.moviecatalogue4.adapter.FavAdapter;
-import com.subdico.moviecatalogue4.db.FavHelper;
 import com.subdico.moviecatalogue4.model.ListData;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import static com.subdico.moviecatalogue4.db.DbContract.NoteColumns.CONTENT_URI;
+import static com.subdico.moviecatalogue4.helper.MappingHelper.mapCursorToArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,10 +40,9 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
 
 
     private FavAdapter favAdapter;
-    private FavHelper favHelper;
+//    private FavHelper favHelper;
     private LinearLayout noItem;
     private ProgressBar progressBar;
-
     private static final String EXRTRA_STATE = "extra_state";
 
 
@@ -50,14 +56,15 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.favorites_recyclerview, container, false);
-        favHelper = FavHelper.getInstance(getContext());
-        favHelper.open();
+//        favHelper = FavHelper.getInstance(getContext());
+//        favHelper.open();
 
         favAdapter = new FavAdapter(getActivity());
         favAdapter.notifyDataSetChanged();
 
         noItem = rootView.findViewById(R.id.no_item_layout);
         progressBar = rootView.findViewById(R.id.progress_bar);
+
 
         RecyclerView rvFav = rootView.findViewById(R.id.rv_show_fav);
         rvFav.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -71,7 +78,7 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null){
-            new LoadDataAsync(favHelper, this).execute();
+            new LoadDataAsync(getContext(), this).execute();
         }else{
             ArrayList<ListData> list = savedInstanceState.getParcelableArrayList(EXRTRA_STATE);
             if (list != null){
@@ -88,12 +95,12 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
 
 
 
-    private static class LoadDataAsync extends AsyncTask<Void, Void, ArrayList<ListData>> {
-        private final WeakReference<FavHelper> WeakHelper;
+    private static class LoadDataAsync extends AsyncTask<Void, Void, Cursor> {
+        private final WeakReference<Context> WeakContext;
         private final WeakReference<LoadDataCallback> WeakCallback;
 
-        LoadDataAsync(FavHelper favHelper, LoadDataCallback callback) {
-            WeakHelper = new WeakReference<>(favHelper);
+        LoadDataAsync(Context context, LoadDataCallback callback) {
+            WeakContext = new WeakReference<>(context);
             WeakCallback = new WeakReference<>(callback);
         }
 
@@ -104,14 +111,16 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
         }
 
         @Override
-        protected ArrayList<ListData> doInBackground(Void... voids) {
-            return WeakHelper.get().getAllFav("series");
+        protected Cursor doInBackground(Void... voids) {
+            Context context = WeakContext.get();
+            return context.getContentResolver().query(CONTENT_URI, null, "series", null, null);
+
         }
 
         @Override
-        protected void onPostExecute(ArrayList<ListData> listData) {
-            super.onPostExecute(listData);
-            WeakCallback.get().postExecute(listData);
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+            WeakCallback.get().postExecute(cursor);
         }
     }
 
@@ -121,12 +130,13 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
     }
 
     @Override
-    public void postExecute(ArrayList<ListData> listData) {
+    public void postExecute(Cursor cursor) {
         progressBar.setVisibility(View.GONE);
-        favAdapter.setmDataFav(listData);
 
+        ArrayList<ListData> listData = mapCursorToArrayList(cursor);
         if (listData.size() > 0){
             noItem.setVisibility(View.GONE);
+            favAdapter.setmDataFav(listData);
             Log.d("onn", "postExecute: invisible ");
         }else{
             noItem.setVisibility(View.VISIBLE);
@@ -136,12 +146,8 @@ public class SeriesFavoritesFragment extends Fragment implements LoadDataCallbac
     @Override
     public void onResume() {
         super.onResume();
-        new LoadDataAsync(favHelper, this).execute();
+        new LoadDataAsync(getContext(),this).execute();
+
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        favHelper.close();
-    }
 }

@@ -37,6 +37,23 @@
     <string name="sukses_add">Berhasil ditambahkan</string>
     <string name="sukses_delete">Berhasil dihapus</string>
     <string name="sukses_fail">Gagal</string>
+
+    <string name="list_item">List</string>
+    <string name="settings">Pengaturan</string>
+    <string name="search">Pencarian</string>
+    <string name="reminder">Pengingat</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Tambah Widget</string>
+    <string name="empty_text">empty</string>
+    <string name="release_today_reminder">Rilis pengingat hari ini</string>
+    <string name="daily_reminder">Pengingat harian</string>
+    <string name="daily_reminder_description">Ingatkan Anda untuk kembali ke Katalog Film setiap jam 7 pagi</string>
+    <string name="release_today_reminder_description">Ingatkan Anda film apa yang dirilis hari ini setiap jam 8 pagi</string>
+    <string name="daily_notif_message">Movie Catalogue merindukanmu!</string>
+    <string name="has_been_release">%s telah rilis hari ini!</string>
+    <string name="favorite_widget">Widget kesukaan</string>
+    <string name="alarm_turned_on">%s berhasil aktif</string>
+    <string name="alarm_turned_off">%s berhasil dinonaktifkan</string>
     <!--    toastend-->
 
 </resources>

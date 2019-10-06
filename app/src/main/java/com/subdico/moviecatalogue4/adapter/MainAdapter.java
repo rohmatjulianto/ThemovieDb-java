@@ -2,7 +2,6 @@ package com.subdico.moviecatalogue4.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,8 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import static androidx.viewpager.widget.PagerAdapter.POSITION_NONE;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.mainViewHolder> {
 
@@ -79,7 +80,16 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.mainViewHolder
                             .error(R.drawable.ic_warning))
                     .into(imgPoster);
             tvName.setText(listData.getName());
-            Log.d("adapter", "bind: " + listData.getPoster_path());
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return POSITION_NONE;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return POSITION_NONE;
     }
 }

@@ -93,8 +93,10 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.FavViewHolder> {
                     .into(imgFav);
             tvName.setText(listData.getName());
             tvRelease.setText(listData.getFirst_air_date());
-            float d = listData.getVote_average().floatValue()/2;
-            ratingBar.setRating(d);
+
+            Double d = Double.valueOf(listData.getVote_average());
+            float f = d.floatValue()/2;
+            ratingBar.setRating(f);
         }
     }
 

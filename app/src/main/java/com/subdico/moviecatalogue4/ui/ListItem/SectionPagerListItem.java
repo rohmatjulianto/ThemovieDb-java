@@ -1,37 +1,34 @@
-package com.subdico.moviecatalogue4.ui.Favorites;
+package com.subdico.moviecatalogue4.ui.ListItem;
 
 import android.content.Context;
 
 import com.subdico.moviecatalogue4.R;
-import com.subdico.moviecatalogue4.ui.Favorites.pager.MovieFavoritesFragment;
-import com.subdico.moviecatalogue4.ui.Favorites.pager.SeriesFavoritesFragment;
+import com.subdico.moviecatalogue4.ui.ListItem.PagerListItem.MovieFragment;
+import com.subdico.moviecatalogue4.ui.ListItem.PagerListItem.SeriesFragment;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class SectionPagerAdapter extends FragmentStatePagerAdapter {
+public class SectionPagerListItem extends FragmentStatePagerAdapter {
 
     private static final int[] TAB_TITLE = new int[]{R.string.movie, R.string.series};
     private final Context mContext;
 
-    public SectionPagerAdapter(Context context, FragmentManager fm) {
+    public SectionPagerListItem(Context context, FragmentManager fm) {
         super(fm);
-        mContext = context;
+        this.mContext = context;
     }
-
 
     @Override
     public Fragment getItem(int position) {
         Fragment fragment = null;
         switch (position){
             case 0:
-                fragment = new MovieFavoritesFragment();
+                fragment = new MovieFragment();
                 break;
             case 1:
-                fragment = new SeriesFavoritesFragment();
+                fragment = new SeriesFragment();
                 break;
         }
         return fragment;
@@ -42,14 +39,10 @@ public class SectionPagerAdapter extends FragmentStatePagerAdapter {
         return TAB_TITLE.length;
     }
 
-    @Nullable
+
     @Override
     public CharSequence getPageTitle(int position) {
         return mContext.getResources().getString(TAB_TITLE[position]);
     }
 
-    @Override
-    public int getItemPosition(@NonNull Object object) {
-        return POSITION_NONE;
-    }
 }
